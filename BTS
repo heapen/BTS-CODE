@@ -1,0 +1,160 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct node {
+	int data;
+	struct node *left, *right;
+}node;
+
+node* createNode(int key){
+	node *newNode = malloc(sizeof(node));
+	newNode->data = key;
+	newNode->left = newNode->right = NULL;
+	return newNode;
+}
+
+node* insertNode(node *root, int key){
+	if(!root) return createNode(key);
+	
+	if(key < root->data) root->left = insertNode(root->left, key);
+	else if (key > root->data) root->right = insertNode(root->right, key);
+	
+	return root;
+}
+
+void inorderTraversal(node *root){
+	if(root) {
+		inorderTraversal(root->left);
+		printf("%d ", root->data);
+		inorderTraversal(root->right);
+	}
+}
+
+void preorderTraversal(node *root) {
+    if (root) {
+        printf("%d ", root->data);
+        preorderTraversal(root->left);
+        preorderTraversal(root->right);
+    }
+}
+
+void postorderTraversal(node *root) {
+    if (root) {
+        postorderTraversal(root->left); // Değişiklik burada
+        postorderTraversal(root->right);  // Değişiklik burada
+        printf("%d ", root->data);
+    }
+}
+
+node* deleteNode(node *root, int key){
+    if(!root) return root;
+    
+    if (key < root->data) root->left = deleteNode(root->left, key);
+    else if (key > root->data) root->right = deleteNode(root->right, key);
+    else {
+        if(!root->left){
+            node *temp = root->right;
+            free(root);
+            return temp;
+        }
+        else if(!root->right){
+            node *temp = root->left;
+            free(root);
+            return temp;
+        }
+        node *temp = root->right;
+        while (temp->left) temp = temp->left;
+        root->data = temp->data;
+        root->right = deleteNode(root->right, temp->data);
+    }
+    return root;
+}
+
+
+int findMinValue(node *root) {
+    while (root->left != NULL) {
+        root = root->left;
+    }
+    return root->data;
+}
+
+int findMaxValue(node *root) {
+    while (root->right != NULL) {
+        root = root->right;
+    }
+    return root->data;
+}
+
+// Ağaçta bir düğümü arar
+//Node* findNode(Node* root, int key) {
+//    if (root == NULL || root->data == key) {
+//        return root;
+//    }
+//
+//    if (key < root->data) {
+//        return findNode(root->left, key);
+//    } else {
+//        return findNode(root->right, key);
+//    }
+//}
+
+
+int main(){
+  node *root = NULL;
+    int choice, key;
+
+    do {
+        printf("\nMenu:\n");
+        printf("1. Eleman Ekle\n");
+        printf("2. Eleman Sil\n");
+        printf("3. Inorder Traversal\n");
+        printf("4. Preorder Traversal\n");
+        printf("5. Postorder Traversal\n");
+        printf("6. Min Degeri Bul\n");
+        printf("7. Max Degeri Bul\n");
+        printf("8. Cikis\n");
+        printf("Seciminizi yapın: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Eklemek istediğiniz elemanı girin: ");
+                scanf("%d", &key);
+                root = insertNode(root, key);
+                break;
+            case 2:
+                printf("Silmek istediğiniz elemanı girin: ");
+                scanf("%d", &key);
+                root = deleteNode(root, key);
+                break;
+            case 3:
+                printf("Inorder Traversal: ");
+                inorderTraversal(root);
+                printf("\n");
+                break;
+            case 4:
+                printf("Preorder Traversal: ");
+                preorderTraversal(root);
+                printf("\n");
+                break;
+            case 5:
+                printf("Postorder Traversal: ");
+                postorderTraversal(root);
+                printf("\n");
+                break;
+            case 6:
+                printf("Min Değer: %d\n", findMinValue(root));
+                break;
+            case 7:
+                printf("Max Değer: %d\n", findMaxValue(root));
+                break;
+            case 8:
+                printf("Programdan cıkılıyor.\n");
+                break;
+            default:
+                printf("Geçersiz seçenek. Tekrar deneyin.\n");
+        }
+    } while (choice != 8);
+
+    return 0;
+}
